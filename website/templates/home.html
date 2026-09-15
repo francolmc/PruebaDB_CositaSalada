@@ -6,6 +6,15 @@
     <title>Home</title>
 </head>
 <body>
+    {% if user.is_authenticated %}
+        <p>
+            Hola, {{ user.username }} <a href="{% url 'logout' %}">Logout</a>
+        </p>
+    {% else %}
+        <p>
+            Ud. no se encuentra autenticado, puedo hacerlo en <a href="{% url 'login' %}">Login</a>
+        </p>
+    {% endif %}
     <h1>Esta es mi pagina principal</h1>
 </body>
 </html>

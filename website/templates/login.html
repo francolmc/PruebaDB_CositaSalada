@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Proyecto</title>
+    <title>Login</title>
 </head>
 <body>
-    {% if user.is_authenticated %}
-        <p>
-            Hola, {{ user.username }} <a href="{% url 'logout' %}">Logout</a>
-        </p>
-    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Guardar</button>
+        <button type="submit">Ingresar</button>
     </form>
 </body>
 </html>
