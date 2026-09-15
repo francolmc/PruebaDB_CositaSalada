@@ -13,6 +13,13 @@ class Tecnologia(models.Model):
     def __str__(self):
         return self.nombre
 
+# Etiquetas, que funcione con un sistema de tags para poder buscar el proyecto
+class Etiqueta(models.Model):
+    nombre = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre
+
 class Proyecto(models.Model):
     titulo = models.CharField(max_length=100)
     descripcion = models.TextField()
@@ -27,6 +34,11 @@ class Proyecto(models.Model):
         blank=True
     )
     tecnologias = models.ManyToManyField(Tecnologia, related_name='proyectos', blank=True)
+    etiquetas = models.ManyToManyField(
+        Etiqueta,
+        related_name='proyectos',
+        blank=True
+    )
 
     def __str__(self):
         return self.titulo
