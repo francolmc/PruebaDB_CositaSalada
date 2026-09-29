@@ -9,8 +9,15 @@ def home(request):
 
 @login_required
 def proyectos_home(request):
+    # proyectos = Proyecto.objects.all()
+    # return render(request, 'home_proyectos.html', {'proyectos': proyectos})
+    q = request.GET.get('q', '')
     proyectos = Proyecto.objects.all()
-    return render(request, 'home_proyectos.html', {'proyectos': proyectos})
+    if q:
+        proyectos = proyectos.filter(titulo__icontains=q)
+    proyectos = proyectos.order_by('titulo')
+    return render(request, 'home_proyectos.html', {'proyectos': proyectos, 'q': q})
+
 
 @login_required
 def crear_proyecto(request):
@@ -18,7 +25,7 @@ def crear_proyecto(request):
         form = ProyectoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('lista_proyectos')
     else:
         form = ProyectoForm()
     return render(request, 'crear_proyecto.html', { 'form': form })
@@ -32,7 +39,7 @@ def editar_proyecto(request, pk):
         form = ProyectoForm(request.POST, instance=proyecto)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('lista_proyectos')
     else:
         form = ProyectoForm(instance=proyecto)
     return render(request, 'crear_proyecto.html', {'form': form})
@@ -42,5 +49,5 @@ def eliminar_proyecto(request, pk):
     proyecto = get_object_or_404(Proyecto, pk=pk)
     if request.method == 'POST':
         proyecto.delete()
-        return redirect('home')
+        return redirect('lista_proyectos')
     return render(request, 'confirmar_eliminar.html', {'proyecto': proyecto})
