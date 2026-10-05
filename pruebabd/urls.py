@@ -27,5 +27,6 @@ urlpatterns = [
     path('proyectos/', website.proyectos_home, name='lista_proyectos'),
     path('proyectos/nuevo', website.crear_proyecto, name='crear_proyecto'),
     path('proyectos/<int:pk>/editar/', website.editar_proyecto, name='editar_proyecto'),
-    path('proyectos/<int:pk>/eliminar/', website.eliminar_proyecto, name="eliminar_proyecto")
+    path('proyectos/<int:pk>/eliminar/', website.eliminar_proyecto, name="eliminar_proyecto"),
+    path('registro/', website.registro, name='registro')
 ]
