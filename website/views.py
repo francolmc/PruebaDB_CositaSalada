@@ -4,6 +4,7 @@ from .forms import ProyectoForm, RegistroForm
 from .models import Proyecto
 from django.contrib.auth import login
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 
 # Create your views here.
 def home(request):
@@ -14,7 +15,7 @@ def proyectos_home(request):
     # proyectos = Proyecto.objects.all()
     # return render(request, 'home_proyectos.html', {'proyectos': proyectos})
     q = request.GET.get('q', '')
-    proyectos = Proyecto.objects.all()
+    proyectos = Proyecto.objects.filter(usuario = request.user)
     if q:
         proyectos = proyectos.filter(titulo__icontains=q)
     proyectos = proyectos.order_by('titulo')
@@ -26,7 +27,11 @@ def crear_proyecto(request):
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
         if form.is_valid():
-            form.save()
+            proyecto = form.save(commit=False)
+            proyecto.usuario = request.user
+            proyecto.save()
+            form.save_m2m()
+            messages.success(request, 'Proyecto creado.')
             return redirect('lista_proyectos')
     else:
         form = ProyectoForm()
@@ -36,6 +41,9 @@ def crear_proyecto(request):
 def editar_proyecto(request, pk):
     # Buscar el proyecto
     proyecto = get_object_or_404(Proyecto, pk = pk)
+
+    if proyecto.usuario != request.user:
+        raise PermissionDenied
 
     if request.method == 'POST':
         form = ProyectoForm(request.POST, instance=proyecto)
@@ -49,6 +57,10 @@ def editar_proyecto(request, pk):
 @login_required
 def eliminar_proyecto(request, pk):
     proyecto = get_object_or_404(Proyecto, pk=pk)
+
+    if proyecto.usuario != request.user:
+        raise PermissionDenied
+    
     if request.method == 'POST':
         proyecto.delete()
         return redirect('lista_proyectos')

@@ -16,8 +16,10 @@
         {% for proyecto in proyectos %}
             <li>
                 {{ proyecto.titulo }}
+                {% if proyecto.usuario == user %}
                 <a href="{% url 'editar_proyecto' proyecto.pk %}">Editar</a>
                 <a href="{% url 'eliminar_proyecto' proyecto.pk %}">Eliminar</a>
+                {% endif %}
             </li>
         {% empty %}
         <li>No se encontraron proyectos relacionados.</li>
