@@ -21,8 +21,9 @@
         <button type="submit">Buscar 🔍</button>
     </form>
     <a href="{% url 'crear_proyecto' %}">Nuevo Proyecto</a>
+    <p>{{ page_obj.paginator.count }} proyecto(s) encontrado(s).</p>
     <ul>
-        {% for proyecto in proyectos %}
+        {% for proyecto in page_obj %}
             <li>
                 {{ proyecto.titulo }}
                 {% if proyecto.usuario == user %}
@@ -34,5 +35,20 @@
         <li>No se encontraron proyectos relacionados.</li>
         {% endfor %}
     </ul>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="paginaicion">
+        {% if page_obj.has_previous %}
+            <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{
+                page_obj.previous_page_number
+            }}">Anterior</a>
+        {% endif %}
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        {% if page_obj.has_next %}
+            <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{
+                page_obj.next_page_number
+            }}">Siguiente</a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </body>
 </html>

@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
 def home(request):
@@ -25,14 +26,22 @@ def proyectos_home(request):
     if categoria_id.isdigit():
         proyectos = proyectos.filter(categoria_id=categoria_id)
     proyectos = proyectos.order_by('titulo')
+
+    paginator = Paginator(proyectos, 5)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    params = request.GET.copy()
+    params.pop('page', None)
+
     return render(
         request, 
         'home_proyectos.html', 
         {
-            'proyectos': proyectos, 
+            'page_obj': page_obj, 
             'q': q,
             'categoria_id': categoria_id,
-            'categorias': Categoria.objects.order_by('nombre')
+            'categorias': Categoria.objects.order_by('nombre'),
+            'querystring': params.urlencode()
         }
     )
 
