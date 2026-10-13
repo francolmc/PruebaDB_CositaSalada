@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import ProyectoForm, RegistroForm
-from .models import Proyecto
+from .models import Proyecto, Categoria
 from django.contrib.auth import login
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 
 # Create your views here.
 def home(request):
@@ -15,11 +16,25 @@ def proyectos_home(request):
     # proyectos = Proyecto.objects.all()
     # return render(request, 'home_proyectos.html', {'proyectos': proyectos})
     q = request.GET.get('q', '')
+    categoria_id = request.GET.get('categoria', '')
     proyectos = Proyecto.objects.filter(usuario = request.user)
     if q:
-        proyectos = proyectos.filter(titulo__icontains=q)
+        proyectos = proyectos.filter(
+            Q(titulo__icontains=q) | Q(descripcion__icontains=q)
+        ) # WHERE titulo LIKE q OR descripcion LIKE q
+    if categoria_id.isdigit():
+        proyectos = proyectos.filter(categoria_id=categoria_id)
     proyectos = proyectos.order_by('titulo')
-    return render(request, 'home_proyectos.html', {'proyectos': proyectos, 'q': q})
+    return render(
+        request, 
+        'home_proyectos.html', 
+        {
+            'proyectos': proyectos, 
+            'q': q,
+            'categoria_id': categoria_id,
+            'categorias': Categoria.objects.order_by('nombre')
+        }
+    )
 
 
 @login_required
